@@ -14,15 +14,33 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Auth::routes();
 
+//ubah jadi group midlleware saja
+//untuk login admin
+Route::group(['middleware' => ['auth', 'level']], function () {
+    Route::resource('product', \App\Http\Controllers\ProductController::class)->middleware('auth', 'level');
+    Route::get('product/destroy/{id}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('product.destroy')->middleware('auth', 'level');
+});
+
+Route::group(['middleware'=>['auth','manager']], function(){
+    //ini untuk manager
+});
+
+Route::group(['middleware'=>['auth','kasir']], function(){
+    //ini untuk kasir
+});
+
+
+
+
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+//membuat route test
 Route::get('/test', function () {
     return view('layouts.master');
 });
-
-Route::resource('product', \App\Http\Controllers\ProductController::class);
-Route::get('product/{id}/delete', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('product.destroy');

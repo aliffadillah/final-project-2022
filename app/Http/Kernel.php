@@ -65,5 +65,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'level' => \App\Http\Middleware\Level::class,
         'levelmanager' => \App\Http\Middleware\LevelManager::class,
+        'levelkasir' => \App\Http\Middleware\Levelkasir::class,
+          
     ];
 }

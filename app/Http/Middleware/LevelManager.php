@@ -16,9 +16,11 @@ class LevelManager
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::check() && Auth:user()->level == 'manager') {
-            return $next($request);
+       if (\Auth::user()->level != 'manager') {
+           return abort(404);
+           # code...
+       }
         }
-        return redirect('/');
+        return $next($request);
     }
 }

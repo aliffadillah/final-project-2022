@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\Level;
+use App\Http\Middleware\LevelManager;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,31 +16,32 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('auth.login');
+    return view('welcome');
 });
 
 Auth::routes();
+Route::group(['middleware' => ['auth']], function () {
+    Route::resource('product', \App\Http\Controllers\ProductController::class);
+    Route::get('product/destroy/{id}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('product.destroy');
 
-//ubah jadi group midlleware saja
-//untuk login admin
-Route::group(['middleware' => ['auth', 'level']], function () {
-    Route::resource('product', \App\Http\Controllers\ProductController::class)->middleware('auth', 'level');
-    Route::get('product/destroy/{id}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('product.destroy')->middleware('auth', 'level');
+    //cart
+    Route::resource('cart', \App\Http\Controllers\UserCartController::class);
+    Route::resource('order', \App\Http\Controllers\OrderController::class);
+
+    Route::resource('do_transaction', \App\Http\Controllers\DoTransactionController::class);
+    Route::resource('invoice',\App\Http\Controllers\InvoiceController::class);
 });
 
-Route::group(['middleware'=>['auth','manager']], function(){
-    //ini untuk manager
+Route::group(['middleware' => ['auth', 'levelkasir']], function () {
+
+    //cart
+    Route::resource('cart', \App\Http\Controllers\UserCartController::class);
+    Route::resource('order', \App\Http\Controllers\OrderController::class);
+
+    Route::resource('do_transaction', \App\Http\Controllers\DoTransactionController::class);
+    Route::resource('invoice',\App\Http\Controllers\InvoiceController::class);
 });
-
-Route::group(['middleware'=>['auth','kasir']], function(){
-    //ini untuk kasir
-});
-
-
-
-
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('auth');
 
 //membuat route test
 Route::get('/test', function () {
